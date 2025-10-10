@@ -36,13 +36,30 @@ class GoogleReviewsClient {
             CURLOPT_TIMEOUT => 15
         ]);
         $raw = curl_exec($ch);
-
-        echo $raw;
-
         curl_close($ch);
-        if (!$raw) return [];
+
+        if (!$raw) {
+            echo "Empty response from Google API.";
+            return [];
+        }
 
         $json = json_decode($raw, true);
+
+        if (isset($json['error'])) {
+            $err = $json['error'];
+            $code = $err['code'] ?? 'unknown';
+            $msg = $err['message'] ?? 'No message';
+            $status = $err['status'] ?? '';
+            echo "<strong>Google API error {$code} ({$status}):</strong> {$msg}<br>";
+
+            // Optional: print the full error for debugging
+            if (isset($err['details'])) {
+                echo '<pre>' . print_r($err['details'], true) . '</pre>';
+            }
+
+            return [];
+        }
+
         $reviews = (array)($json['reviews'] ?? []);
         if ($cache) $cache->set($cacheKey, $reviews, 300);
         return $reviews;
