@@ -63,7 +63,11 @@ class GoogleReview extends BaseElement {
         return $list->limit($this->LimitReviews ?: 6);
     }
 
-    public function forTemplate() {
-        return $this->renderWith(['GoogleReviews', self::class]);
+    public function forTemplate($holder = true) {
+        return parent::forTemplate($holder);
+    }
+
+    public function getRenderTemplates($holder = false) {
+        return array_merge(['GoogleReviews'], parent::getRenderTemplates($holder));
     }
 }

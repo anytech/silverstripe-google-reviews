@@ -19,8 +19,10 @@ class GoogleReviewsClient {
         $cache = Injector::inst()->get(CacheInterface::class . '.appGoogleReviews');
         $cacheKey = 'reviews-' . md5($placeID . '-' . $lang);
         $cached = $cache ? $cache->get($cacheKey) : null;
-        if ($cached) return $cached;
-
+        if ($cached) {
+            echo '<p>Using cached reviews - Nothing has changed</p>';
+            return $cached;
+        }
         $url = self::ENDPOINT . rawurlencode($placeID) . '?fields=reviews&languageCode=' . urlencode($lang);
 
         $ch = curl_init();
@@ -34,6 +36,9 @@ class GoogleReviewsClient {
             CURLOPT_TIMEOUT => 15
         ]);
         $raw = curl_exec($ch);
+
+        echo $raw;
+
         curl_close($ch);
         if (!$raw) return [];
 
