@@ -21,5 +21,5 @@
       </article>
     <% end_loop %>
   </div>
-  <link rel="stylesheet" href="$resourceURL('anytech/silverstripe-google-reviews:css/google-reviews.css')">
+  <link rel="stylesheet" href="$resourceURL('anytech/silverstripe-google-reviews:client/css/google-reviews.css')">
 </div>

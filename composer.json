@@ -5,8 +5,8 @@
     "license": "MIT",
     "authors": [
         {
-            "name": "kayne middleton",
-            "email": "info@anytech.ca"
+            "name": "Kayne Middleton",
+            "email": "kayne@anytech.ca"
         }
     ],
     "require": {
@@ -21,7 +21,7 @@
     },
     "extra": {
         "expose": [
-            "css/google-reviews.css"
+            "client/css/google-reviews.css"
         ]
     },
     "minimum-stability": "stable",
