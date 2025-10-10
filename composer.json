@@ -21,7 +21,7 @@
     },
     "extra": {
         "expose": [
-            "client/css/"
+            "client/css"
         ]
     },
     "minimum-stability": "stable",
