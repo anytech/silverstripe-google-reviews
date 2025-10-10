@@ -1,5 +1,5 @@
 <div class="element-google-reviews">
-  <% if $Title %><h3>$Title</h3><% end_if %>
+  <% if $ShowTitle %><h3>$Title</h3><% end_if %>
 
   <div class="reviews-grid">
     <% loop $Reviews %>

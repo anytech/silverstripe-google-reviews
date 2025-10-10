@@ -10,7 +10,7 @@ use anytech\googlereviews\Models\GoogleReview as ReviewModel;
 
 class GoogleReview extends BaseElement {
     private static $table_name = 'ElementGoogleReview';
-    private static $icon = 'font-icon-star';
+    private static $icon = 'font-icon-circle-star';
     private static $singular_name = 'Google Reviews';
     private static $plural_name = 'Google Reviews';
 
