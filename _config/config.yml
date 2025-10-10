@@ -1,0 +1,19 @@
+---
+Name: anytech-googlereviews
+After:
+- '#coreconfig'
+- '#elementalconfig'
+---
+SilverStripe\SiteConfig\SiteConfig:
+  extensions:
+  - anytech\googlereviews\Extensions\SiteConfigGoogleReviewsExtension
+
+SilverStripe\Dev\CronTask\CronTaskController:
+  tasks:
+  - anytech\googlereviews\Tasks\GoogleReviewsSyncTask
+
+SilverStripe\Core\Injector\Injector:
+  Psr\SimpleCache\CacheInterface.appGoogleReviews:
+    factory: SilverStripe\Core\Cache\CacheFactory
+    constructor:
+      namespace: "appGoogleReviews"
