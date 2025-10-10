@@ -21,7 +21,7 @@
     },
     "extra": {
         "expose": [
-            "client/css/google-reviews.css"
+            "client/css/"
         ]
     },
     "minimum-stability": "stable",
