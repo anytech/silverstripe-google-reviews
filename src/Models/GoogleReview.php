@@ -34,6 +34,14 @@ class GoogleReview extends DataObject {
         'ShortText' => 'Text'
     ];
 
+    private static $has_one = [
+        'Element' => \anytech\googlereviews\Elements\GoogleReview::class
+    ];
+
+    private static $cascade_deletes = [
+        'Element'
+    ];
+
     public function getShortText() {
         $t = trim((string)$this->Text);
         return mb_strlen($t) > 80 ? mb_substr($t, 0, 80) . '…' : $t;

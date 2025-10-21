@@ -22,6 +22,15 @@ class GoogleReview extends BaseElement {
         'OrderBy' => 'Enum("Newest,HighestRated","Newest")'
     ];
 
+    private static $has_many = [
+        'Reviews' => ReviewModel::class
+    ];
+
+    private static $owns = [
+        'Reviews'
+    ];
+
+
     public function getType() {
         return 'Google Reviews';
     }
@@ -55,9 +64,9 @@ class GoogleReview extends BaseElement {
         return $fields;
     }
 
-    public function Reviews() {
+    public function FilteredReviews() {
         $place = SiteConfig::current_site_config()->GooglePlaceID;
-        $list = ReviewModel::get()->filter('PlaceID', $place);
+        $list = $this->Reviews()->filter('PlaceID', $place);
         if ($this->MinStars > 0) $list = $list->filter('Rating:GreaterThanOrEqual', $this->MinStars);
         if ($this->OrderBy === 'HighestRated') $list = $list->sort(['Rating' => 'DESC', 'TimeUnix' => 'DESC']);
         return $list->limit($this->LimitReviews ?: 6);

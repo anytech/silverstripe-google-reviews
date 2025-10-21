@@ -2,7 +2,7 @@
   <% if $ShowTitle %><h3>$Title</h3><% end_if %>
 
   <div class="reviews-grid">
-    <% loop $Reviews %>
+    <% loop $FilteredReviews %>
       <article class="review-card">
         <header class="review-head">
           <% if $Top.ShowAvatar && $AuthorPhotoURL %>
