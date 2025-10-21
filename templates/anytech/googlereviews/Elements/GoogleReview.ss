@@ -2,6 +2,7 @@
   <% if $ShowTitle %><h3>$Title</h3><% end_if %>
 
   <div class="reviews-grid">
+    <% if $FilteredReviews %>
     <% loop $FilteredReviews %>
       <article class="review-card">
         <header class="review-head">
@@ -39,6 +40,7 @@
         <p class="text">$Text.XML</p>
       </article>
     <% end_loop %>
+    <% end_if %>
   </div>
 
   <link rel="stylesheet" href="$resourceURL('anytech/silverstripe-google-reviews:client/css/google-reviews.css')">
