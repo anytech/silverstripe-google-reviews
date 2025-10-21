@@ -13,6 +13,7 @@ class GoogleReview extends BaseElement {
     private static $icon = 'font-icon-circle-star';
     private static $singular_name = 'Google Reviews';
     private static $plural_name = 'Google Reviews';
+    private static $inline_editable = false;
 
     private static $db = [
         'LimitReviews' => 'Int',
