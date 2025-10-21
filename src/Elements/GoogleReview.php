@@ -5,6 +5,8 @@ namespace anytech\googlereviews\Elements;
 use DNADesign\Elemental\Models\BaseElement;
 use SilverStripe\Forms\NumericField;
 use SilverStripe\Forms\DropdownField;
+use SilverStripe\Forms\GridField\GridField;
+use SilverStripe\Forms\GridField\GridFieldConfig_RelationEditor;
 use SilverStripe\SiteConfig\SiteConfig;
 use anytech\googlereviews\Models\GoogleReview as ReviewModel;
 
@@ -27,10 +29,10 @@ class GoogleReview extends BaseElement {
         'Reviews' => ReviewModel::class
     ];
 
-    private static $owns = [
+    // Ensure children are deleted with the element
+    private static $cascade_deletes = [
         'Reviews'
     ];
-
 
     public function getType() {
         return 'Google Reviews';
@@ -47,6 +49,19 @@ class GoogleReview extends BaseElement {
 
     public function getCMSFields() {
         $fields = parent::getCMSFields();
+
+        // Remove auto-scaffolded relation placeholder
+        $fields->removeByName('Reviews');
+
+        // Manage reviews via GridField
+        $grid = GridField::create(
+            'Reviews',
+            'Reviews',
+            $this->Reviews(),
+            GridFieldConfig_RelationEditor::create()
+        );
+        $fields->addFieldToTab('Root.Reviews', $grid);
+
         $fields->addFieldsToTab('Root.Settings', [
             NumericField::create('LimitReviews', 'Max reviews to show'),
             DropdownField::create('MinStars', 'Minimum stars', [
@@ -62,14 +77,19 @@ class GoogleReview extends BaseElement {
                 'HighestRated' => 'Highest rated'
             ])
         ]);
+
         return $fields;
     }
 
     public function FilteredReviews() {
         $place = SiteConfig::current_site_config()->GooglePlaceID;
         $list = $this->Reviews()->filter('PlaceID', $place);
-        if ($this->MinStars > 0) $list = $list->filter('Rating:GreaterThanOrEqual', $this->MinStars);
-        if ($this->OrderBy === 'HighestRated') $list = $list->sort(['Rating' => 'DESC', 'TimeUnix' => 'DESC']);
+        if ($this->MinStars > 0) {
+            $list = $list->filter('Rating:GreaterThanOrEqual', $this->MinStars);
+        }
+        if ($this->OrderBy === 'HighestRated') {
+            $list = $list->sort(['Rating' => 'DESC', 'TimeUnix' => 'DESC']);
+        }
         return $list->limit($this->LimitReviews ?: 6);
     }
 
