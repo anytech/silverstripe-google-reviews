@@ -11,9 +11,3 @@ SilverStripe\SiteConfig\SiteConfig:
 SilverStripe\Dev\CronTask\CronTaskController:
   tasks:
   - anytech\googlereviews\Tasks\GoogleReviewsSyncTask
-
-SilverStripe\Core\Injector\Injector:
-  Psr\SimpleCache\CacheInterface.appGoogleReviews:
-    factory: SilverStripe\Core\Cache\CacheFactory
-    constructor:
-      namespace: "appGoogleReviews"
