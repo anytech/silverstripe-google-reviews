@@ -16,13 +16,6 @@ class GoogleReviewsClient {
         $lang = $cfg->GoogleReviewsLanguage ?: 'en';
         if (!$apiKey || !$placeID) return [];
 
-        $cache = Injector::inst()->get(CacheInterface::class . '.appGoogleReviews');
-        $cacheKey = 'reviews-' . md5($placeID . '-' . $lang);
-        $cached = $cache ? $cache->get($cacheKey) : null;
-        if ($cached) {
-            echo '<p>Using cached reviews - Nothing has changed</p>';
-            return $cached;
-        }
         $url = self::ENDPOINT . rawurlencode($placeID) . '?fields=reviews&languageCode=' . urlencode($lang);
 
         $ch = curl_init();
@@ -52,7 +45,6 @@ class GoogleReviewsClient {
             $status = $err['status'] ?? '';
             echo "<strong>Google API error {$code} ({$status}):</strong> {$msg}<br>";
 
-            // Optional: print the full error for debugging
             if (isset($err['details'])) {
                 echo '<pre>' . print_r($err['details'], true) . '</pre>';
             }
@@ -60,8 +52,6 @@ class GoogleReviewsClient {
             return [];
         }
 
-        $reviews = (array)($json['reviews'] ?? []);
-        if ($cache) $cache->set($cacheKey, $reviews, 300);
-        return $reviews;
+        return (array)($json['reviews'] ?? []);
     }
 }

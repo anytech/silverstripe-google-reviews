@@ -28,30 +28,46 @@ class GoogleReviewsSyncTask extends BuildTask {
             }
 
             $id = (string)($r['name'] ?? sha1(json_encode($r)));
-            if (GoogleReview::get()->filter('GoogleReviewID', $id)->exists()) {
-                continue;
+            $gr = GoogleReview::get()->filter('GoogleReviewID', $id)->first();
+            if ($gr) {
+                $gr->AuthorName = (string)($r['authorAttribution']['displayName'] ?? '');
+                $gr->AuthorURL = (string)($r['authorAttribution']['uri'] ?? '');
+                $gr->AuthorPhotoURL = (string)($r['authorAttribution']['photoUri'] ?? '');
+                $gr->Rating = $rating;
+                $gr->Text = (string)($r['text']['text'] ?? ($r['originalText']['text'] ?? ''));
+                $gr->RelativeTime = (string)($r['relativePublishTimeDescription'] ?? '');
+                $gr->TimeUnix = isset($r['publishTime']) ? strtotime($r['publishTime']) : time();
+                $gr->Language = (string)($r['originalText']['languageCode'] ?? '');
+                $gr->PlaceID = (string)$cfg->GooglePlaceID;
+                $gr->write();
+            } else {
+                $gr = GoogleReview::create();
+                $gr->GoogleReviewID = $id;
+                $gr->AuthorName = (string)($r['authorAttribution']['displayName'] ?? '');
+                $gr->AuthorURL = (string)($r['authorAttribution']['uri'] ?? '');
+                $gr->AuthorPhotoURL = (string)($r['authorAttribution']['photoUri'] ?? '');
+                $gr->Rating = $rating;
+                $gr->Text = (string)($r['text']['text'] ?? ($r['originalText']['text'] ?? ''));
+                $gr->RelativeTime = (string)($r['relativePublishTimeDescription'] ?? '');
+                $gr->TimeUnix = isset($r['publishTime']) ? strtotime($r['publishTime']) : time();
+                $gr->Language = (string)($r['originalText']['languageCode'] ?? '');
+                $gr->PlaceID = (string)$cfg->GooglePlaceID;
+                $gr->write();
             }
-
-            $gr = GoogleReview::create();
-            $gr->GoogleReviewID = $id;
-            $gr->AuthorName = (string)($r['authorAttribution']['displayName'] ?? '');
-            $gr->AuthorURL = (string)($r['authorAttribution']['uri'] ?? '');
-            $gr->AuthorPhotoURL = (string)($r['authorAttribution']['photoUri'] ?? '');
-            $gr->Rating = $rating;
-            $gr->Text = (string)($r['text']['text'] ?? ($r['originalText']['text'] ?? ''));
-            $gr->RelativeTime = (string)($r['relativePublishTimeDescription'] ?? '');
-            $gr->TimeUnix = isset($r['publishTime']) ? strtotime($r['publishTime']) : time();
-            $gr->Language = (string)($r['originalText']['languageCode'] ?? '');
-            $gr->PlaceID = (string)$cfg->GooglePlaceID;
-            $gr->write();
 
             // link to all existing GoogleReview elements
             foreach (GoogleReviewElement::get() as $element) {
-                $grClone = $gr->duplicate(false);
-                $grClone->ElementID = $element->ID;
-                $grClone->write();
-            }
+                $existing = GoogleReview::get()->filter([
+                    'GoogleReviewID' => $id,
+                    'ElementID' => $element->ID
+                ])->first();
 
+                if (!$existing) {
+                    $grClone = $gr->duplicate(false);
+                    $grClone->ElementID = $element->ID;
+                    $grClone->write();
+                }
+            }
             $count++;
         }
 
