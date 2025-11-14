@@ -7,7 +7,6 @@ Elemental block for **SilverStripe 5** to import and display Google Reviews usin
 ## Features
 - Imports Google Reviews automatically via a CronTask
 - Displays reviews in a configurable Elemental block
-- Caches API responses using `Psr\SimpleCache`
 - Controls for minimum star rating, newest/highest order, and result limit
 - SiteConfig fields for API key, Place ID, language, and rating filter
 
