@@ -87,8 +87,12 @@ class GoogleReview extends BaseElement {
         if ($this->MinStars > 0) {
             $list = $list->filter('Rating:GreaterThanOrEqual', $this->MinStars);
         }
+
         if ($this->OrderBy === 'HighestRated') {
             $list = $list->sort(['Rating' => 'DESC', 'TimeUnix' => 'DESC']);
+        } else {
+            // Default to Newest
+            $list = $list->sort('TimeUnix', 'DESC');
         }
         return $list->limit($this->LimitReviews ?: 6);
     }
