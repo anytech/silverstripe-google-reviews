@@ -8,6 +8,7 @@ use SilverStripe\Forms\DropdownField;
 use SilverStripe\Forms\GridField\GridField;
 use SilverStripe\Forms\GridField\GridFieldConfig_RelationEditor;
 use SilverStripe\SiteConfig\SiteConfig;
+use SilverStripe\View\Requirements;
 use anytech\googlereviews\Models\GoogleReview as ReviewModel;
 
 class GoogleReview extends BaseElement {
@@ -93,6 +94,11 @@ class GoogleReview extends BaseElement {
         }
 
         return $list->limit($this->LimitReviews ?: 6);
+    }
+
+    public function forTemplate($holder = true): string {
+        Requirements::css('anytech/silverstripe-google-reviews:client/css/google-reviews.css');
+        return parent::forTemplate($holder);
     }
 
     public function getRenderTemplates($suffix = '') {

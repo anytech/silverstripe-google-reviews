@@ -42,6 +42,4 @@
     <% end_loop %>
     <% end_if %>
   </div>
-
-  <link rel="stylesheet" href="$resourceURL('anytech/silverstripe-google-reviews:client/css/google-reviews.css')">
 </div>
