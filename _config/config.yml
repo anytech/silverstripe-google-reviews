@@ -2,12 +2,8 @@
 Name: anytech-googlereviews
 After:
 - '#coreconfig'
-- '#elementalconfig'
+- '#elemental'
 ---
 SilverStripe\SiteConfig\SiteConfig:
   extensions:
   - anytech\googlereviews\Extensions\SiteConfigGoogleReviewsExtension
-
-SilverStripe\Dev\CronTask\CronTaskController:
-  tasks:
-  - anytech\googlereviews\Tasks\GoogleReviewsSyncTask

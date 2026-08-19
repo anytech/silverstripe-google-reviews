@@ -2,23 +2,50 @@
 
 namespace anytech\googlereviews\Tasks;
 
-use SilverStripe\Dev\BuildTask;
-use SilverStripe\SiteConfig\SiteConfig;
-use anytech\googlereviews\Services\GoogleReviewsClient;
-use anytech\googlereviews\Models\GoogleReview;
 use anytech\googlereviews\Elements\GoogleReview as GoogleReviewElement;
+use anytech\googlereviews\Models\GoogleReview;
+use anytech\googlereviews\Services\GoogleReviewsClient;
+use RuntimeException;
+use SilverStripe\CronTask\Interfaces\CronTask;
+use SilverStripe\Dev\BuildTask;
+use SilverStripe\PolyExecution\PolyOutput;
+use SilverStripe\SiteConfig\SiteConfig;
+use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Input\InputInterface;
 
-class GoogleReviewsSyncTask extends BuildTask {
-    private static $segment = 'google-reviews-sync';
-    protected $title = 'Google Reviews Sync';
-    protected $description = 'Fetches reviews from Google Places and stores them as DataObjects.';
+class GoogleReviewsSyncTask extends BuildTask implements CronTask {
+    protected static string $commandName = 'google-reviews-sync';
 
-    public function run($request) {
+    protected string $title = 'Google Reviews Sync';
+
+    protected static string $description = 'Fetches reviews from Google Places and stores them as DataObjects.';
+
+    private static string $schedule = '0 3 * * *';
+
+    public function getSchedule() {
+        return $this->config()->get('schedule');
+    }
+
+    public function process() {
+        $this->sync();
+    }
+
+    protected function execute(InputInterface $input, PolyOutput $output): int {
+        try {
+            $count = $this->sync();
+        } catch (RuntimeException $e) {
+            $output->writeln('<error>' . $e->getMessage() . '</error>');
+            return Command::FAILURE;
+        }
+
+        $output->writeln("Imported: {$count}");
+        return Command::SUCCESS;
+    }
+
+    private function sync(): int {
         $cfg = SiteConfig::current_site_config();
-        $min = (int)($cfg->GoogleReviewsMinRating ?: 0);
-
-        $client = new GoogleReviewsClient();
-        $rows = $client->fetchReviews();
+        $min = (int)$cfg->GoogleReviewsMinRating;
+        $rows = GoogleReviewsClient::create()->fetchReviews();
 
         $count = 0;
         foreach ($rows as $r) {
@@ -29,7 +56,6 @@ class GoogleReviewsSyncTask extends BuildTask {
 
             $id = (string)($r['name'] ?? sha1(json_encode($r)));
 
-            // Update or create for each element
             foreach (GoogleReviewElement::get() as $element) {
                 $gr = GoogleReview::get()->filter([
                     'GoogleReviewID' => $id,
@@ -57,6 +83,6 @@ class GoogleReviewsSyncTask extends BuildTask {
             }
         }
 
-        echo "Imported: {$count}\n";
+        return $count;
     }
 }

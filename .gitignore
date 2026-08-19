@@ -1,0 +1,8 @@
+.planning/
+.claude/
+CLAUDE.md
+CLAUDE.local.md
+vendor/
+composer.lock
+.env
+.DS_Store

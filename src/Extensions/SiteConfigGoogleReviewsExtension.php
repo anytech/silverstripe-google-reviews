@@ -2,13 +2,13 @@
 
 namespace anytech\googlereviews\Extensions;
 
-use SilverStripe\ORM\DataExtension;
+use SilverStripe\Core\Extension;
 use SilverStripe\Forms\FieldList;
 use SilverStripe\Forms\TextField;
 use SilverStripe\Forms\LiteralField;
 use SilverStripe\Forms\DropdownField;
 
-class SiteConfigGoogleReviewsExtension extends DataExtension {
+class SiteConfigGoogleReviewsExtension extends Extension {
     private static $db = [
         'GooglePlacesAPIKey' => 'Varchar(255)',
         'GooglePlaceID' => 'Varchar(255)',
@@ -16,7 +16,7 @@ class SiteConfigGoogleReviewsExtension extends DataExtension {
         'GoogleReviewsMinRating' => 'Int'
     ];
 
-    public function updateCMSFields(FieldList $fields) {
+    protected function updateCMSFields(FieldList $fields) {
         $fields->addFieldsToTab('Root.GoogleReviews', [
             LiteralField::create('GRHelp', '<p>Enter your Google Places API key and Place ID.</p>'),
             TextField::create('GooglePlacesAPIKey', 'Places API Key'),

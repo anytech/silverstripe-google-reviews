@@ -29,7 +29,6 @@ class GoogleReview extends BaseElement {
         'Reviews' => ReviewModel::class
     ];
 
-    // Ensure children are deleted with the element
     private static $cascade_deletes = [
         'Reviews'
     ];
@@ -50,10 +49,8 @@ class GoogleReview extends BaseElement {
     public function getCMSFields() {
         $fields = parent::getCMSFields();
 
-        // Remove auto-scaffolded relation placeholder
         $fields->removeByName('Reviews');
 
-        // Manage reviews via GridField
         $grid = GridField::create(
             'Reviews',
             'Reviews',
@@ -84,6 +81,7 @@ class GoogleReview extends BaseElement {
     public function FilteredReviews() {
         $place = SiteConfig::current_site_config()->GooglePlaceID;
         $list = $this->Reviews()->filter('PlaceID', $place);
+
         if ($this->MinStars > 0) {
             $list = $list->filter('Rating:GreaterThanOrEqual', $this->MinStars);
         }
@@ -91,17 +89,13 @@ class GoogleReview extends BaseElement {
         if ($this->OrderBy === 'HighestRated') {
             $list = $list->sort(['Rating' => 'DESC', 'TimeUnix' => 'DESC']);
         } else {
-            // Default to Newest
             $list = $list->sort('TimeUnix', 'DESC');
         }
+
         return $list->limit($this->LimitReviews ?: 6);
     }
 
-    public function forTemplate($holder = true) {
-        return parent::forTemplate($holder);
-    }
-
-    public function getRenderTemplates($holder = false) {
-        return array_merge(['GoogleReviews'], parent::getRenderTemplates($holder));
+    public function getRenderTemplates($suffix = '') {
+        return array_merge(['GoogleReviews'], parent::getRenderTemplates($suffix));
     }
 }

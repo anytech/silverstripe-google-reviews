@@ -2,11 +2,13 @@
 
 namespace anytech\googlereviews\Services;
 
-use SilverStripe\Core\Injector\Injector;
-use Psr\SimpleCache\CacheInterface;
+use RuntimeException;
+use SilverStripe\Core\Injector\Injectable;
 use SilverStripe\SiteConfig\SiteConfig;
 
 class GoogleReviewsClient {
+    use Injectable;
+
     const ENDPOINT = 'https://places.googleapis.com/v1/places/';
 
     public function fetchReviews(): array {
@@ -14,7 +16,10 @@ class GoogleReviewsClient {
         $apiKey = trim((string)$cfg->GooglePlacesAPIKey);
         $placeID = trim((string)$cfg->GooglePlaceID);
         $lang = $cfg->GoogleReviewsLanguage ?: 'en';
-        if (!$apiKey || !$placeID) return [];
+
+        if (!$apiKey || !$placeID) {
+            throw new RuntimeException('Places API Key and Place ID must both be set in Settings > Google Reviews.');
+        }
 
         $url = self::ENDPOINT . rawurlencode($placeID) . '?fields=reviews&languageCode=' . urlencode($lang);
 
@@ -29,27 +34,25 @@ class GoogleReviewsClient {
             CURLOPT_TIMEOUT => 15
         ]);
         $raw = curl_exec($ch);
+        $curlError = curl_error($ch);
         curl_close($ch);
 
-        if (!$raw) {
-            echo "Empty response from Google API.";
-            return [];
+        if ($raw === false || $raw === '') {
+            throw new RuntimeException('Empty response from the Google Places API. ' . $curlError);
         }
 
         $json = json_decode($raw, true);
+
+        if (!is_array($json)) {
+            throw new RuntimeException('Unreadable response from the Google Places API: ' . $raw);
+        }
 
         if (isset($json['error'])) {
             $err = $json['error'];
             $code = $err['code'] ?? 'unknown';
             $msg = $err['message'] ?? 'No message';
             $status = $err['status'] ?? '';
-            echo "<strong>Google API error {$code} ({$status}):</strong> {$msg}<br>";
-
-            if (isset($err['details'])) {
-                echo '<pre>' . print_r($err['details'], true) . '</pre>';
-            }
-
-            return [];
+            throw new RuntimeException("Google API error {$code} ({$status}): {$msg}");
         }
 
         return (array)($json['reviews'] ?? []);

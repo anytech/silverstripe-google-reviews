@@ -1,6 +1,6 @@
 {
     "name": "anytech/silverstripe-google-reviews",
-    "description": "elemental block for silverstripe 5 to import and display google reviews using the places api v1",
+    "description": "elemental block for silverstripe 6 to import and display google reviews using the places api v1",
     "type": "silverstripe-vendormodule",
     "license": "MIT",
     "authors": [
@@ -10,9 +10,14 @@
         }
     ],
     "require": {
-        "silverstripe/framework": "^5",
-        "dnadesign/silverstripe-elemental": "^5",
-        "silverstripe/crontask": "^3"
+        "php": "^8.3",
+        "ext-curl": "*",
+        "ext-json": "*",
+        "silverstripe/framework": "^6.1",
+        "silverstripe/siteconfig": "^6",
+        "silverstripe/vendor-plugin": "^3",
+        "dnadesign/silverstripe-elemental": "^6",
+        "silverstripe/crontask": "^4"
     },
     "autoload": {
         "psr-4": {
@@ -23,6 +28,12 @@
         "expose": [
             "client/css"
         ]
+    },
+    "config": {
+        "allow-plugins": {
+            "composer/installers": true,
+            "silverstripe/vendor-plugin": true
+        }
     },
     "minimum-stability": "stable",
     "prefer-stable": true
